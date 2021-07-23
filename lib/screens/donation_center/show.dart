@@ -8,6 +8,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:organd/components/coustom_bottom_nav_bar.dart';
 import 'package:organd/components/default_button.dart';
+import 'package:organd/config/my_contstants.dart';
 import 'package:organd/constants.dart';
 import 'package:organd/enums.dart';
 import 'package:organd/models/donation_center.dart';
@@ -29,7 +30,7 @@ class DonationCenterShow extends StatefulWidget {
 
 class _DonationCenterShow extends State<DonationCenterShow> {
   Future<List<DonationCenter>> donationCenter;
-
+String url;
   String password;
   _DonationCenterShow(){
 
@@ -37,7 +38,9 @@ class _DonationCenterShow extends State<DonationCenterShow> {
   @override
   void initState() {
     super.initState();
+    url= MyConstants.ipAddress;
     donationCenter = fetchDonationCenter();
+
   }
 
 
@@ -46,7 +49,8 @@ class _DonationCenterShow extends State<DonationCenterShow> {
 
     var client = http.Client();
     try {
-      var uriResponse = await client.post(Uri.parse('http://10.140.10.68/per/organd_back/public/index.php/api/donation-center/'),
+      String myurl='${url}/api/donation-center/';
+      var uriResponse = await client.post(Uri.parse(myurl),
           headers: {
             'Access-Control-Allow-Origin': '*',
             "Access-Control-Allow-Methods": "GET, POST, OPTIONS, PUT, PATCH, DELETE",
@@ -73,7 +77,7 @@ class _DonationCenterShow extends State<DonationCenterShow> {
       }else {
         // If the server did not return a 200 OK response,
         // then throw an exception.
-        throw Exception('Failed to load album');
+        throw Exception('Failed to load donation center');
       }
     } finally {
       client.close();
@@ -171,6 +175,7 @@ class _DonationCenterShow extends State<DonationCenterShow> {
                                 text: "Select",
                                 press: () {
 
+
                                 },
                               ),
                               Spacer(),
@@ -192,7 +197,7 @@ class _DonationCenterShow extends State<DonationCenterShow> {
             }
 
             // By default, show a loading spinner.
-            return CircularProgressIndicator();
+            return  Center(child: CircularProgressIndicator(semanticsLabel: "Loading..",));
           },
         ),
       ),

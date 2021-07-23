@@ -6,6 +6,7 @@ import 'package:organd/screens/control_center/show.dart';
 import 'package:organd/screens/donation_center/show.dart';
 import 'package:organd/screens/profile/profile_screen.dart';
 import 'package:organd/screens/recipient/show.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 import '../constants.dart';
@@ -50,14 +51,25 @@ class CustomBottomNavBar extends StatelessWidget {
                       ? kPrimaryColor
                       : inActiveIconColor,
                 ),
-                onPressed: () =>
-                    Navigator.pushNamed(context, ControlCenter.routeName),
+                onPressed: ()   => Navigator.pushNamed(context, ControlCenter.routeName),
+
               ),
               IconButton(
                 icon: SvgPicture.asset("assets/icons/Heart Icon.svg"),
-                onPressed: () =>
+                onPressed: () async{
+                   final  prefs = await SharedPreferences.getInstance();
+        int donor_id= prefs.getInt('donor_id');
+                if(donor_id!=null){
 
-                  Navigator.pushNamed(context, RecipientShow.routeName),
+        Navigator.pushNamed(context, "/donor-show");
+  } else{
+
+    Navigator.pushNamed(context, "/recipient-show");
+    }
+
+                }
+
+
 
               ),
               IconButton(

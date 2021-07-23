@@ -46,11 +46,12 @@ class _DonorShow extends State<DonorShow> {
 
 
     final prefs = await SharedPreferences.getInstance();
-    int recipient_id= prefs.getInt('recipient_id');
+    int donor_id= prefs.getInt('donor_id');
 
     var client = http.Client();
     try {
-      var uriResponse = await client.post(Uri.parse('http://10.140.10.68/per/organd_back/public/index.php/api/recipient/show'),
+      String myurl='${url}/api/donor/show';
+      var uriResponse = await client.post(Uri.parse(myurl),
           headers: {
             'Access-Control-Allow-Origin': '*',
             "Access-Control-Allow-Methods": "GET, POST, OPTIONS, PUT, PATCH, DELETE",
@@ -59,9 +60,9 @@ class _DonorShow extends State<DonorShow> {
             "responseHeader": "Access-Control-Allow-Origin",
 
           },
-          body: json.encode({"id":recipient_id})
+          body: json.encode({"id":donor_id})
       );
-      print("recipient id ${recipient_id}");
+      print("recipient id ${donor_id}");
 
       print(uriResponse.statusCode);
       print(uriResponse.body.toString());
@@ -72,19 +73,7 @@ class _DonorShow extends State<DonorShow> {
     } finally {
       client.close();
     }
-    final response =
-    await http.get(Uri.parse('http://10.140.10.68/per/organd_back/public/index.php/api/donor/1'));
 
-    if (response.statusCode == 200) {
-      print(response.body.toString());
-      // If the server did return a 200 OK response,
-      // then parse the JSON.
-      return Donor.fromJson(jsonDecode(response.body));
-    } else {
-      // If the server did not return a 200 OK response,
-      // then throw an exception.
-      throw Exception('Failed to load album');
-    }
   }
 
   @override

@@ -24,6 +24,7 @@ class RecipientRegister extends StatefulWidget {
 
 class _RecipientRegister extends State<RecipientRegister> {
 
+  Future<http.Response> requiredList;
   String genderValue="Male";
   int bloodValue=1;
   int organValue=1;
@@ -39,27 +40,34 @@ class _RecipientRegister extends State<RecipientRegister> {
   final TextEditingController _email = new TextEditingController();
   final TextEditingController _password = new TextEditingController();
   final TextEditingController _number = new TextEditingController();
-//GlobalKey _ammount=new GlobalKey();
-  final _formKey = GlobalKey<FormState>();
 
-  String url;
+  final _formKey = GlobalKey<FormState>();
+List organ_list;
+List blood_list;
+Future<http.Response> response;
+String url;
 
   @override
   initState() {
     super.initState();
       url= MyConstants.ipAddress;
     print("url ${url}");
+
+
+    response=getBloodList();
+    print(organ_list);
+    print(blood_list);
   }
 
 
-  DateTime selectedDate = DateTime.now();
+  DateTime selectedDate = DateTime.utc(1999);
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
         context: context,
         initialDate: selectedDate,
-        firstDate: DateTime(2015, 8),
-        lastDate: DateTime(2101));
+        firstDate: DateTime(1980, 8),
+        lastDate: DateTime(2000));
     if (picked != null && picked != selectedDate)
       setState(() {
         selectedDate = picked;
@@ -72,17 +80,28 @@ class _RecipientRegister extends State<RecipientRegister> {
         backgroundColor: Colors.white,
 
         // drawer: myDrawer(),
-        body: Container(
-          margin: EdgeInsets.only(top: SizeConfig.screenHeight* 0.02),
-          child: ListView(
-            padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 5.0),
-            shrinkWrap: true,
-            children: <Widget>[
-              Padding(
+        body:
 
-                  padding: EdgeInsets.symmetric(vertical: SizeConfig.screenHeight*0.05, horizontal: 16.0),
-                  child:Form(
-key:  _formKey,
+        FutureBuilder<http.Response>(
+        future: response,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            print(snapshot.data);
+            var data = snapshot.data;
+
+            return Container(
+              margin: EdgeInsets.only(top: SizeConfig.screenHeight * 0.02),
+              child: ListView(
+                padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 5.0),
+                shrinkWrap: true,
+                children: <Widget>[
+                  Padding(
+
+                    padding: EdgeInsets.symmetric(
+                        vertical: SizeConfig.screenHeight * 0.05,
+                        horizontal: 16.0),
+                    child: Form(
+                      key: _formKey,
                       child: Column(
 
                         children: <Widget>[
@@ -100,8 +119,8 @@ key:  _formKey,
                           TextFormField(
                             controller: _first_name,
                             keyboardType: TextInputType.text,
-                            validator: (str){
-                              str.length>10?"Not valid ":null;
+                            validator: (str) {
+                              str.length > 10 ? "Not valid " : null;
                             },
 
                             maxLines: 1,
@@ -120,8 +139,8 @@ key:  _formKey,
                           TextFormField(
                             controller: _middle_name,
                             keyboardType: TextInputType.text,
-                            validator: (str){
-                              str.length>10?"Not valid ":null;
+                            validator: (str) {
+                              str.length > 10 ? "Not valid " : null;
                             },
 
                             maxLines: 1,
@@ -138,8 +157,8 @@ key:  _formKey,
                           TextFormField(
                             controller: _last_namee,
                             keyboardType: TextInputType.text,
-                            validator: (str){
-                              str.length>10?"Not valid ":null;
+                            validator: (str) {
+                              str.length > 10 ? "Not valid " : null;
                             },
 
                             maxLines: 1,
@@ -157,22 +176,29 @@ key:  _formKey,
 
                           Row(
                             children: [
-                              Text("Select Gender",  style: TextStyle(fontWeight: FontWeight.w400 ,fontStyle: FontStyle.italic,color:Colors.black ,height: 2.0,fontSize: 18)),
-                            SizedBox(width: SizeConfig.screenWidth*0.07,),
+                              Text("Select Gender", style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.black,
+                                  height: 2.0,
+                                  fontSize: 18)),
+                              SizedBox(width: SizeConfig.screenWidth * 0.07,),
                               DropdownButton(
                                 hint: Text('Select Gender'),
 
-                                value:genderValue,
+                                value: genderValue,
                                 items: [
-                                DropdownMenuItem(child: Text("Male"),value: "Male",),
-                                DropdownMenuItem(child: Text("Female"), value: "Female",),
-                              ],
-                                onChanged:(String text){
+                                  DropdownMenuItem(
+                                    child: Text("Male"), value: "Male",),
+                                  DropdownMenuItem(
+                                    child: Text("Female"), value: "Female",),
+                                ],
+                                onChanged: (String text) {
                                   print(text);
                                   setState(() {
                                     genderValue = text;
                                   });
-                                  },
+                                },
 
                               ),
                             ],
@@ -180,20 +206,33 @@ key:  _formKey,
                           SizedBox(height: getProportionateScreenHeight(30)),
                           Row(
                             children: [
-                              Text("Blood Type:-",  style: TextStyle(fontWeight: FontWeight.w400 ,fontStyle: FontStyle.italic,color:Colors.black ,height: 2.0,fontSize: 18)),
-                              SizedBox(width: SizeConfig.screenWidth*0.07,),
+                              Text("Blood Type:-", style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.black,
+                                  height: 2.0,
+                                  fontSize: 18)),
+                              SizedBox(width: SizeConfig.screenWidth * 0.07,),
                               DropdownButton(
                                 hint: Text('Blood Type'),
+                                value: bloodValue.toString(),
 
-                                value:bloodValue,
-                                items: [
-                                  DropdownMenuItem(child: Text("A+"),value: 1,),
-                                  DropdownMenuItem(child: Text("A"), value: 2,),
-                                ],
-                                onChanged:(int text){
-                                  print(text);
+
+                                //value: organValue,
+                                items:
+                                blood_list.map((  value) {
+                                  print(value);
+                                  return DropdownMenuItem<String>(
+                                    value: value['id'].toString(),
+                                    child: new Text(value['name']),
+                                  );
+                                }).toList(),
+
+                                onChanged: (value) {
+                                  print(value);
                                   setState(() {
-                                    bloodValue = text;
+                                    print(value);
+                                    bloodValue =    int.parse(value);
                                   });
                                 },
 
@@ -203,21 +242,33 @@ key:  _formKey,
                           SizedBox(height: getProportionateScreenHeight(30)),
                           Row(
                             children: [
-                              Text("Organ to be donored:-",  style: TextStyle(fontWeight: FontWeight.w400 ,fontStyle: FontStyle.italic,color:Colors.black ,height: 2.0,fontSize: 18)),
-                              SizedBox(width: SizeConfig.screenWidth*0.07,),
+                              Text("Organ needed:-", style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.black,
+                                  height: 2.0,
+                                  fontSize: 18)),
+                              SizedBox(width: SizeConfig.screenWidth * 0.07,),
                               DropdownButton(
                                 hint: Text('Organ'),
+                                value: organValue.toString(),
 
-                                value:organValue,
-                                items: [
-                                  DropdownMenuItem(child: Text("Blood"),value: 1,),
-                                  DropdownMenuItem(child: Text("Kidney"), value: 2,),
-                                  DropdownMenuItem(child: Text("Eye"), value: 3,),
-                                ],
-                                onChanged:(int text){
-                                  print(text);
+
+                                //value: organValue,
+                                items:
+                                organ_list.map((  value) {
+                                  print(value);
+                                  return DropdownMenuItem<String>(
+                                    value: value['id'].toString(),
+                                    child: new Text(value['name']),
+                                  );
+                                }).toList(),
+
+                                onChanged: (value) {
+                                  print(value);
                                   setState(() {
-                                    organValue = text;
+                                    print(value);
+                                    organValue =    int.parse(value);
                                   });
                                 },
 
@@ -227,11 +278,17 @@ key:  _formKey,
                           SizedBox(height: getProportionateScreenHeight(30)),
                           Row(
                             children: [
-                              Text("Birth Date",  style: TextStyle(fontWeight: FontWeight.w400 ,fontStyle: FontStyle.italic,color:Colors.black ,height: 2.0,fontSize: 18)),
-                              SizedBox(width: SizeConfig.screenWidth*0.09,),
+                              Text("Birth Date", style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.black,
+                                  height: 2.0,
+                                  fontSize: 18)),
+                              SizedBox(width: SizeConfig.screenWidth * 0.09,),
                               RaisedButton(
                                 onPressed: () => _selectDate(context),
-                                child: Text("${selectedDate.year}:${selectedDate.month}:${selectedDate.day}"),
+                                child: Text("${selectedDate.year}:${selectedDate
+                                    .month}:${selectedDate.day}"),
                               ),
                             ],
                           ),
@@ -240,8 +297,8 @@ key:  _formKey,
                           TextFormField(
                             controller: _email,
                             keyboardType: TextInputType.emailAddress,
-                            validator: (str){
-                              str.length>10?"Not valid ":null;
+                            validator: (str) {
+                              str.length > 10 ? "Not valid " : null;
                             },
 
 
@@ -260,8 +317,8 @@ key:  _formKey,
                           TextFormField(
                             controller: _phone,
                             keyboardType: TextInputType.text,
-                            validator: (str){
-                              str.length>10?"Not valid ":null;
+                            validator: (str) {
+                              str.length > 10 ? "Not valid " : null;
                             },
 
 
@@ -281,8 +338,8 @@ key:  _formKey,
                           TextFormField(
                             controller: _number,
                             keyboardType: TextInputType.number,
-                            validator: (str){
-                              str.length!=10?"Not valid ":null;
+                            validator: (str) {
+                              str.length != 10 ? "Not valid " : null;
                             },
                             maxLines: 1,
                             autocorrect: false,
@@ -305,36 +362,48 @@ key:  _formKey,
                                 // if all are valid then go to success screen
                                 KeyboardUtil.hideKeyboard(context);
                                 postRequest();
-
                               }
                             },
                           ),
 
-                              FlatButton(
-                                child: Text("Cancel",  style: TextStyle(fontWeight: FontWeight.w400 ,fontStyle: FontStyle.italic,color:Colors.red,height: 2.0,fontSize: 18)),
-                                onPressed: (){
-                                  Navigator.pop(context);
-                                  print("Cancel");
-                                },
-                              ),
-
+                          FlatButton(
+                            child: Text("Cancel", style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontStyle: FontStyle.italic,
+                                color: Colors.red,
+                                height: 2.0,
+                                fontSize: 18)),
+                            onPressed: () {
+                              Navigator.pop(context);
+                              print("Cancel");
+                            },
+                          ),
 
 
                         ],
                       ),
                     ),
+                  ),
+
+
+                ],
               ),
+            );
+          }
+          else if (snapshot.hasError) {
+            print("${snapshot.error}");
+            return Text("${snapshot.error}");
+          }
 
-
-
-            ],
-          ),
-        ));
+          // By default, show a loading spinner.
+          return  Center(child: CircularProgressIndicator(semanticsLabel: "Loading..",));
+        }
+        ), );
   }
 
 
   Future<http.Response> postRequest () async {
-      SharedPreferences.setMockInitialValues({});
+
     final prefs = await SharedPreferences.getInstance();
 
     var data = {
@@ -347,6 +416,7 @@ key:  _formKey,
       'sex': genderValue,
       'birth_date': selectedDate.toIso8601String(),
       'blood_type': bloodValue,
+      'organ': organValue,
 
 
     };
@@ -371,6 +441,7 @@ key:  _formKey,
           },
           body: body);
       print(uriResponse.statusCode);
+      print(uriResponse.body.toString());
       print(uriResponse.request.url);
       if(uriResponse.statusCode==200){
         print(uriResponse.body.toString());
@@ -379,6 +450,90 @@ key:  _formKey,
 
         prefs.setInt('recipient_id', data['data']['recipient_id']);
         Navigator.pushNamed(context, "/recipient-show");
+      }
+    } finally {
+      client.close();
+    }
+  }
+
+  Future<http.Response> getOrganList () async {
+
+
+    var data = {
+      "active":1
+     };
+    //encode Map to JSON
+    var body = json.encode(data);
+
+
+    var client = http.Client();
+    try {
+
+         print(url);
+
+         String myurl='${url}/api/setting/organ-list';
+      var uriResponse = await client.post(Uri.parse(myurl),
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            "Access-Control-Allow-Methods": "GET, POST, OPTIONS, PUT, PATCH, DELETE",
+            "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept",
+            "Content-Type": "application/json",
+            "responseHeader": "Access-Control-Allow-Origin",
+
+          },
+          body: body);
+      print(uriResponse.statusCode);
+      print(uriResponse.request.url);
+      if(uriResponse.statusCode==200){
+        print(uriResponse.body.toString());
+
+        var data = json.decode(uriResponse.body);
+ organ_list=data['data'];
+
+      }
+    } finally {
+      client.close();
+    }
+  }
+
+
+
+
+  Future<http.Response> getBloodList () async {
+
+   await getOrganList();
+    var data = {
+      "active":1
+     };
+    //encode Map to JSON
+    var body = json.encode(data);
+
+
+    var client = http.Client();
+    try {
+
+         print(url);
+
+         String myurl='${url}/api/setting/blood-list';
+      var uriResponse = await client.post(Uri.parse(myurl),
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            "Access-Control-Allow-Methods": "GET, POST, OPTIONS, PUT, PATCH, DELETE",
+            "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept",
+            "Content-Type": "application/json",
+            "responseHeader": "Access-Control-Allow-Origin",
+
+          },
+          body: body);
+      print(uriResponse.statusCode);
+      print(uriResponse.request.url);
+      if(uriResponse.statusCode==200){
+        print(uriResponse.body.toString());
+
+        var data = json.decode(uriResponse.body);
+ blood_list=data['data'];
+  return uriResponse;
+
       }
     } finally {
       client.close();

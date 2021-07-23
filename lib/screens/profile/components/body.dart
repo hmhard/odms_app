@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:organd/screens/login/login.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'profile_menu.dart';
 import 'profile_pic.dart';
@@ -35,7 +38,38 @@ class Body extends StatelessWidget {
           ProfileMenu(
             text: "Log Out",
             icon: "assets/icons/Log out.svg",
-            press: () {},
+            press: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text("Alert"),
+                    content: Text(
+                        "Would you like to logout?"),
+                    actions: [
+                      FlatButton(
+                        child: Text("Cancel"),
+                        onPressed: () {},
+                      ),
+                      FlatButton(
+                        child: Text("Continue"),
+                        onPressed: ()async {
+                          final  prefs = await SharedPreferences.getInstance();
+                        prefs.remove('donor_id');
+                        prefs.remove('recipient_id');
+                        Navigator.pushNamed(context, Login.routeName);
+                        //SystemNavigator.pop();
+                        }
+                        ), //,
+                    ],
+                  );;
+                },
+              );
+              // show the dialog
+
+            }
+
+
           ),
         ],
       ),

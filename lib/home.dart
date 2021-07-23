@@ -3,12 +3,14 @@ import 'dart:io';
 
 import 'package:ext_storage/ext_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:organd/components/default_button.dart';
 import 'package:organd/config/my_contstants.dart';
 import 'package:organd/constants.dart';
 
 import 'package:organd/size_config.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class MyHomePage extends StatefulWidget {
@@ -28,6 +30,9 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     requestStorage();
+
+
+
     print("ip address");
       readCounter().then((String s){
         print("ip set ${s}");
@@ -35,11 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     });
      }
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+
   Future requestStorage() async{
     print("storage");
     var status = await Permission.storage.status;
@@ -48,6 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
       await Permission.storage.request();
     }
   }
+
   Future<String> _getPath() {
     return ExtStorage.getExternalStorageDirectory();
   }
@@ -81,81 +83,109 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
 
 
-      body: new Container(
-        margin: EdgeInsets.symmetric(horizontal: width*0.05),
+      body:   WillPopScope(
+        onWillPop: ()=>    showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text("Alert"),
+                content: Text(
+                    "Would you like to exit app?"),
+                actions: [
+                  FlatButton(
+                    child: Text("Cancel"),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  FlatButton(
+                      child: Text("Continue"),
+                      onPressed: ()async {
+                        final  prefs = await SharedPreferences.getInstance();
+                        prefs.remove('donor_id');
+                        prefs.remove('recipient_id');
+                         SystemNavigator.pop();
+                      }
+                  ), //,
+                ],
+              );;
+            }),
+        child: Container(
+          margin: EdgeInsets.symmetric(horizontal: width*0.05),
 
-        child:
-          Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          child:
+            Column(
+            mainAxisAlignment: MainAxisAlignment.center,
 
-          children: <Widget>[
-
-
-            Text(
-              "ODMS",
-              style: TextStyle(
-                fontSize: getProportionateScreenWidth(36),
-                color: kPrimaryColor,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              "Welcome to organ donation management system",
-              textAlign: TextAlign.center,
-            ),
-
-        SizedBox(height: height*0.05,),
-
-            Image.asset(
-              "assets/images/splash_3.png",
-              height: getProportionateScreenHeight(265),
-              width: getProportionateScreenWidth(305),
-            ),
-            SizedBox(height: height*0.05,),
-
-
-            Text( "Register as", style:  TextStyle(fontWeight: FontWeight.w300, fontStyle: FontStyle.italic, fontSize: 28, color: kPrimaryColor),),
-            SizedBox(height: height*0.02,),
-            DefaultButton(
-
-              text: "DONOR",
-              press: () {
-                Navigator.pushNamed(context, "/donor-register");
-              },
-            ),
-            SizedBox(height: height*0.02,),
-            DefaultButton(
-              text: "RECIPIENT",
-              press: () {
-                Navigator.pushNamed(context, "/recipient-register");
-              },
-            ),
+            children: <Widget>[
 
 
-            SizedBox(height: 20,),
-            GestureDetector(
-
-              onTap: (){
-                Navigator.pushNamed(context, "/login");
-              },
-
-              child:
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children:[
-                  Padding(
-
-                  padding: EdgeInsets.symmetric(vertical: 5.0,horizontal: 20),
-    child:
-                Text( "Already Registered ? Sign In", style:  TextStyle(fontWeight: FontWeight.w300, fontStyle: FontStyle.italic, fontSize: 19, color: Colors.blue),),
+              Text(
+                "ODMS",
+                style: TextStyle(
+                  fontSize: getProportionateScreenWidth(36),
+                  color: kPrimaryColor,
+                  fontWeight: FontWeight.bold,
                 ),
-        ]
               ),
-            )
-          ],
-        ),
+              Text(
+                "Welcome to organ donation management system",
+                textAlign: TextAlign.center,
+              ),
 
+          SizedBox(height: height*0.05,),
+
+              Image.asset(
+                "assets/images/splash_3.png",
+                height: getProportionateScreenHeight(265),
+                width: getProportionateScreenWidth(305),
+              ),
+              SizedBox(height: height*0.05,),
+
+
+              Text( "Register as", style:  TextStyle(fontWeight: FontWeight.w300, fontStyle: FontStyle.italic, fontSize: 28, color: kPrimaryColor),),
+              SizedBox(height: height*0.02,),
+              DefaultButton(
+
+                text: "DONOR",
+                press: () {
+                  Navigator.pushNamed(context, "/donor-register");
+                },
+              ),
+              SizedBox(height: height*0.02,),
+              DefaultButton(
+                text: "RECIPIENT",
+                press: () {
+                  Navigator.pushNamed(context, "/recipient-register");
+                },
+              ),
+
+
+              SizedBox(height: 20,),
+              GestureDetector(
+
+                onTap: (){
+                  Navigator.pushNamed(context, "/login");
+                },
+
+                child:
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children:[
+                    Padding(
+
+                    padding: EdgeInsets.symmetric(vertical: 5.0,horizontal: 20),
+    child:
+                  Text( "Already Registered ? Sign In", style:  TextStyle(fontWeight: FontWeight.w300, fontStyle: FontStyle.italic, fontSize: 19, color: Colors.blue),),
+                  ),
+          ]
+                ),
+              )
+            ],
+          ),
+
+        ),
       ),
 
 

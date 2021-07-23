@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:organd/home.dart';
+import 'package:organd/screens/control_center/show.dart';
 import 'package:organd/screens/donation_center/show.dart';
 import 'package:organd/screens/donor/register.dart';
 import 'package:organd/screens/donor/show.dart';
@@ -13,6 +14,7 @@ final Map<String, WidgetBuilder> routes = {
   DonorRegister.routeName: (context) => DonorRegister(),
 
   DonorShow.routeName: (context)=> DonorShow(),
+  ControlCenter.routeName: (context)=> ControlCenter(),
 
   RecipientRegister.routeName: (context) => RecipientRegister(),
   RecipientShow.routeName: (context)=> RecipientShow(),

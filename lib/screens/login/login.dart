@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'dart:async';
 import 'dart:convert';
@@ -15,6 +16,7 @@ import 'package:organd/home.dart';
 import 'package:organd/screens/donor/show.dart';
 import 'package:organd/screens/profile/profile_screen.dart';
 import 'package:organd/size_config.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class Login extends StatefulWidget {
@@ -34,36 +36,18 @@ class _Login extends State<Login> {
 
   }
 
-  final TextEditingController _email = new TextEditingController();
-  final TextEditingController _password = new TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  bool toMe;
-  String hash="%23";
 
+
+String url;
   @override
   initState() {
-    toMe=false;
+
     super.initState();
+    url= MyConstants.ipAddress;
   }
 
-  changedToOther(){
-    setState(() {
-      toMe=!toMe;
-    });
-  }
-  DateTime selectedDate = DateTime.now();
 
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime picked = await showDatePicker(
-        context: context,
-        initialDate: selectedDate,
-        firstDate: DateTime(2015, 8),
-        lastDate: DateTime(2101));
-    if (picked != null && picked != selectedDate)
-      setState(() {
-        selectedDate = picked;
-      });
-  }
   String email;
 
   bool remember = false;
@@ -85,8 +69,10 @@ class _Login extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
         backgroundColor: Colors.white,
+
 
         // drawer: myDrawer(),
         body: Container(
@@ -151,7 +137,7 @@ class _Login extends State<Login> {
                           FlatButton(
                             child: Text("Not Registered Yet?",  style: TextStyle(fontWeight: FontWeight.w300,fontStyle: FontStyle.italic, color:Colors.red,height: 2.0,fontSize: 19)),
                             onPressed: (){
-                              Navigator.pushNamed(context,ProfileScreen.routeName);
+                              Navigator.pushNamed(context,MyHomePage.routeName);
 
                             },
                           ),
@@ -169,7 +155,7 @@ class _Login extends State<Login> {
 
 
   Future<http.Response> postRequest () async {
-
+    final prefs = await SharedPreferences.getInstance();
     var data = {
 
       'password': password,
@@ -182,8 +168,9 @@ print(data.toString());
 
     var client = http.Client();
     try {
-      String url= MyConstants.ipAddress;
-      var uriResponse = await client.post(Uri.parse('${url}/api/user/login'),
+
+      String myurl='${url}/api/user/login';
+      var uriResponse = await client.post(Uri.parse(myurl),
           headers: {
             'Access-Control-Allow-Origin': '*',
             "Access-Control-Allow-Methods": "GET, POST, OPTIONS, PUT, PATCH, DELETE",
@@ -194,8 +181,20 @@ print(data.toString());
           },
           body: body);
       print(uriResponse.statusCode);
+      print(uriResponse.body.toString());
       if(uriResponse.statusCode==200){
+        var data= json.decode(uriResponse.body)["data"];
+
+
+        if(data["donor_id"]!=null){
+        prefs.setInt('donor_id', data['donor_id']);
+        Navigator.pushNamed(context, "/donor-show");
+      } else{
+        prefs.setInt('recipient_id', data['recipient_id']);
         Navigator.pushNamed(context, "/recipient-show");
+      }
+
+
       }
       else{
         AlertDialog alert= AlertDialog(
