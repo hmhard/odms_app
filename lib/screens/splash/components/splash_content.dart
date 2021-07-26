@@ -17,13 +17,23 @@ class SplashContent extends StatelessWidget {
       children: <Widget>[
         Spacer(),
         Text(
-          "Organ DMS",
+          "ODMS",
           style: TextStyle(
             fontSize: getProportionateScreenWidth(36),
             color: kPrimaryColor,
             fontWeight: FontWeight.bold,
           ),
         ),
+        Spacer(flex: 1),
+        Text(
+          "Organ Donation management system",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: getProportionateScreenWidth(18),
+            color: kPrimaryColor,
+          ),
+        ),
+        Spacer(flex: 1),
         Text(
           text,
           textAlign: TextAlign.center,

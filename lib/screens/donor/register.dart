@@ -52,8 +52,7 @@ class _DonorRegister extends State<DonorRegister> {
     super.initState();
     url= MyConstants.ipAddress;
     response=getBloodList();
-    print(organ_list);
-    print(blood_list);
+
   }
 
 

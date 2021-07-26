@@ -188,9 +188,11 @@ print(data.toString());
 
         if(data["donor_id"]!=null){
         prefs.setInt('donor_id', data['donor_id']);
+        prefs.setInt('status', data['status']);
         Navigator.pushNamed(context, "/donor-show");
       } else{
         prefs.setInt('recipient_id', data['recipient_id']);
+        prefs.setInt('status', data['status']);
         Navigator.pushNamed(context, "/recipient-show");
       }
 
@@ -203,7 +205,7 @@ print(data.toString());
           actions: <Widget>[
             FlatButton(
               onPressed: () {
-                Navigator.pushNamed(context, "/login");
+                Navigator.popAndPushNamed(context, "/login");
               },
               child: Text("try again"),
             ),

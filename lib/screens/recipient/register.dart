@@ -336,7 +336,7 @@ String url;
                           SizedBox(height: getProportionateScreenHeight(30)),
 
                           TextFormField(
-                            controller: _number,
+                            controller: _password,
                             keyboardType: TextInputType.number,
                             validator: (str) {
                               str.length != 10 ? "Not valid " : null;

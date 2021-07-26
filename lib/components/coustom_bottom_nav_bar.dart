@@ -51,7 +51,7 @@ class CustomBottomNavBar extends StatelessWidget {
                       ? kPrimaryColor
                       : inActiveIconColor,
                 ),
-                onPressed: ()   => Navigator.pushNamed(context, ControlCenter.routeName),
+                onPressed: ()   => Navigator.popAndPushNamed(context, ControlCenter.routeName),
 
               ),
               IconButton(
@@ -61,10 +61,10 @@ class CustomBottomNavBar extends StatelessWidget {
         int donor_id= prefs.getInt('donor_id');
                 if(donor_id!=null){
 
-        Navigator.pushNamed(context, "/donor-show");
+        Navigator.popAndPushNamed(context, "/donor-show");
   } else{
 
-    Navigator.pushNamed(context, "/recipient-show");
+    Navigator.popAndPushNamed(context, "/recipient-show");
     }
 
                 }
@@ -74,7 +74,7 @@ class CustomBottomNavBar extends StatelessWidget {
               ),
               IconButton(
                 icon: SvgPicture.asset("assets/icons/Chat bubble Icon.svg"),
-                onPressed: () =>  Navigator.pushNamed(context, DonationCenterShow.routeName),
+                onPressed: () =>  Navigator.popAndPushNamed(context, DonationCenterShow.routeName),
               ),
               IconButton(
                 icon: SvgPicture.asset(
@@ -84,7 +84,7 @@ class CustomBottomNavBar extends StatelessWidget {
                       : inActiveIconColor,
                 ),
                 onPressed: () =>
-                     Navigator.pushNamed(context, ProfileScreen.routeName),
+                     Navigator.popAndPushNamed(context, ProfileScreen.routeName),
               ),
             ],
           )),

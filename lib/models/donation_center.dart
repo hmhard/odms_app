@@ -27,11 +27,13 @@ class DonationCenter {
    print(json);
     return DonationCenter(
 
+
       name: data['name'],
       address: data['address'],
       photo: data['photo'],
       location: data['location'],
       description: data['description'],
+      id: data['id'],
 
     );
   }

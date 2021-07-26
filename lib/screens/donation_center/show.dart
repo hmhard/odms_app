@@ -3,7 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import 'dart:async';
 import 'dart:convert';
-
+import 'package:organd/helper/MyHelper.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:organd/components/coustom_bottom_nav_bar.dart';
@@ -13,9 +13,11 @@ import 'package:organd/constants.dart';
 import 'package:organd/enums.dart';
 import 'package:organd/models/donation_center.dart';
 import 'package:organd/models/recipient.dart';
+import 'package:organd/screens/control_center/show.dart';
 import 'package:organd/screens/profile/components/profile_pic.dart';
 import 'package:organd/screens/splash/components/splash_content.dart';
 import 'package:organd/size_config.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
  
 
@@ -28,13 +30,12 @@ class DonationCenterShow extends StatefulWidget {
   _DonationCenterShow createState() => new _DonationCenterShow();
 }
 
-class _DonationCenterShow extends State<DonationCenterShow> {
+class _DonationCenterShow extends State<DonationCenterShow>  with MyHelper {
   Future<List<DonationCenter>> donationCenter;
 String url;
   String password;
-  _DonationCenterShow(){
-
-  }
+int donor_id;
+int status;
   @override
   void initState() {
     super.initState();
@@ -45,6 +46,9 @@ String url;
 
 
   Future<List<DonationCenter>> fetchDonationCenter() async {
+    final prefs = await SharedPreferences.getInstance();
+     donor_id= prefs.getInt('donor_id');
+     status= prefs.getInt('status');
 
 
     var client = http.Client();
@@ -111,10 +115,30 @@ String url;
                       Text(
                         "Donation Centers",
                         style: TextStyle(
-                          fontSize: getProportionateScreenWidth(36),
+                          fontSize: getProportionateScreenWidth(26),
 
                           fontWeight: FontWeight.bold,
                         ),
+                      ),
+                      if(status==2)
+                      Text(
+                        "You have Choosed donation center\n want to change",
+                        style: TextStyle(
+                          fontSize: getProportionateScreenWidth(18),
+                          color: Colors.green,
+
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                      if(status!=2)
+                      Text(
+                      "not choosed yet?",
+                      style: TextStyle(
+                      fontSize: getProportionateScreenWidth(20),
+                      color: Colors.red,
+
+                      fontWeight: FontWeight.w400,
+                      ),
                       ),
                       Expanded(
                         flex: 1,
@@ -174,6 +198,30 @@ String url;
                               DefaultButton(
                                 text: "Select",
                                 press: () {
+                                  try {
+                                    var dataa = {
+                                      'donor_id':  donor_id,
+                                      'action': true,
+
+                                      "donation_center_id":data[currentPage].id,
+
+                                    };
+                                    Future<http.Response> uriResponse= sendRequest(context,'/api/donor/dcenter',dataa);
+                                    uriResponse.then((value)  {
+                                      print("val");
+                                      print(value);
+
+
+                                      showAlertDialog(context, "Success", "Donation center selected  Successfully", true, "Close");
+
+                                    });
+
+                                  } finally {
+                                    Navigator.pushNamed(context, ControlCenter.routeName);
+
+                                    //client.close();
+                                  }
+
 
 
                                 },

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:organd/screens/appointment/appoint_donor.dart';
+import 'package:organd/screens/donation/show.dart';
 import 'package:organd/screens/login/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -21,14 +23,19 @@ class Body extends StatelessWidget {
             press: () => {},
           ),
           ProfileMenu(
-            text: "Notifications",
+            text: "Appointments",
             icon: "assets/icons/Bell.svg",
-            press: () {},
+            press: () {
+              Navigator.popAndPushNamed(context, AppointmentShow.routeName);
+            },
           ),
           ProfileMenu(
-            text: "Settings",
+            text: "Donation",
             icon: "assets/icons/Settings.svg",
-            press: () {},
+            press: () {
+              Navigator.popAndPushNamed(context, DonationShow.routeName);
+
+            },
           ),
           ProfileMenu(
             text: "Help Center",
@@ -57,7 +64,7 @@ class Body extends StatelessWidget {
                           final  prefs = await SharedPreferences.getInstance();
                         prefs.remove('donor_id');
                         prefs.remove('recipient_id');
-                        Navigator.pushNamed(context, Login.routeName);
+                        Navigator.popAndPushNamed(context, Login.routeName);
                         //SystemNavigator.pop();
                         }
                         ), //,

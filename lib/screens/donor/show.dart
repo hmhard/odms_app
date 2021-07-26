@@ -127,7 +127,7 @@ class _DonorShow extends State<DonorShow> {
                                     buildListTile( "assets/icons/User Icon.svg","Phone", "${data.phone}"),
                                     buildListTile( "assets/icons/User Icon.svg","Sex", "${data.sex}"),
                                     buildListTile( "assets/icons/User Icon.svg","Blood Type", "${data.bloodType}"),
-                                    buildListTile( "assets/icons/User Icon.svg","Organ Needed", "${data.organ}"),
+                                    buildListTile( "assets/icons/User Icon.svg","Organ", "${data.organ}"),
 
                                   ]
 

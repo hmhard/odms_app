@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:organd/home.dart';
+import 'package:organd/screens/appointment/appoint_donor.dart';
 import 'package:organd/screens/control_center/show.dart';
+import 'package:organd/screens/donation/show.dart';
 import 'package:organd/screens/donation_center/show.dart';
 import 'package:organd/screens/donor/register.dart';
 import 'package:organd/screens/donor/show.dart';
@@ -11,9 +13,11 @@ import 'package:organd/screens/recipient/show.dart';
 import 'package:organd/screens/splash/splash_screen.dart';
 
 final Map<String, WidgetBuilder> routes = {
+  AppointmentShow.routeName: (context) => AppointmentShow(),
   DonorRegister.routeName: (context) => DonorRegister(),
 
   DonorShow.routeName: (context)=> DonorShow(),
+  DonationShow.routeName: (context)=> DonationShow(),
   ControlCenter.routeName: (context)=> ControlCenter(),
 
   RecipientRegister.routeName: (context) => RecipientRegister(),
